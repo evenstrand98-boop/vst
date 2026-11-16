@@ -1,0 +1,22 @@
+name: Build Stepbox
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build VST3
+        run: cmake --build build --config Release --target Stepbox_VST3 --parallel 4
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stepbox-VST3-${{ matrix.os }}
+          path: build/Stepbox_artefacts/Release/VST3/Stepbox.vst3
